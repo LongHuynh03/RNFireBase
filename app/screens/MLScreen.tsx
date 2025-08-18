@@ -1,172 +1,56 @@
+import TranslateText, { TranslateLanguage } from '@react-native-ml-kit/translate-text';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Alert,
-  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
-  View
+  TouchableOpacity
 } from 'react-native';
-
-// Firebase Web SDK import
-import { app } from '../../config/firebaseConfig';
-
-// Import react-native-ml-kit for text recognition
-import TextRecognition from '@react-native-ml-kit/text-recognition';
-
-// Initialize Firebase
-let firebaseInitialized = true;
 
 export default function MLScreen() {
   const router = useRouter();
-  const [imagePath, setImagePath] = useState('');
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [recognizedText, setRecognizedText] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [firebaseStatus, setFirebaseStatus] = useState<string>('');
-
-  useEffect(() => {
-    // Kiểm tra trạng thái Firebase khi component mount
-    if (firebaseInitialized && app) {
-      setFirebaseStatus('✅ Firebase đã được khởi tạo thành công');
-    } else {
-      setFirebaseStatus('⚠️ Firebase chưa được cấu hình, sử dụng mock mode');
-    }
-  }, []);
-
-  // Đã loại bỏ chức năng chụp/chọn ảnh phụ thuộc expo-image-picker
-
-  // Xử lý khi nhập đường dẫn ảnh
-  const handleImagePathChange = (path: string) => {
-    setImagePath(path);
-    if (path) {
-      setSelectedImage(path);
-      setRecognizedText(''); // Reset kết quả cũ
-    } else {
-      setSelectedImage(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [textToTranslate, setTextToTranslate] = useState('');
+  const [translatedText, setTranslatedText] = useState<any>(null);
+  
+  const translateExample = async () => {
+    try {
+      setIsLoading(true);
+      const translatedText = await TranslateText.translate({
+        text: textToTranslate,
+        sourceLanguage: TranslateLanguage.ENGLISH,
+        targetLanguage: TranslateLanguage.VIETNAMESE,
+        downloadModelIfNeeded: true,
+      });
+      console.log('Translated text:', translatedText);
+      setTranslatedText(translatedText);
+    } catch (error) {
+      console.error('Translation error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  async function recognizeTextFromImage(localPath: string) {
-    if (!localPath) {
-      Alert.alert('Lỗi', 'Vui lòng chọn hoặc chụp ảnh trước');
-      return;
-    }
-
-    try {
-      setIsProcessing(true);
-      
-      if (firebaseInitialized && app) {
-        // Sử dụng react-native-ml-kit để nhận dạng văn bản
-        try {
-          const result = await TextRecognition.recognize(localPath);
-          
-          if (result && result.text) {
-            setRecognizedText(result.text);
-          } else {
-            setRecognizedText('Không nhận dạng được văn bản từ ảnh này. Hãy thử ảnh khác có văn bản rõ ràng hơn.');
-          }
-          
-        } catch (mlError: any) {
-          console.error('ML API error:', mlError);
-          
-          // Fallback: Hiển thị thông tin lỗi chi tiết
-          setRecognizedText(
-            'Đã nhận ảnh thành công nhưng gặp lỗi khi gọi API nhận dạng văn bản!\n\n' +
-            'Thông tin lỗi:\n' +
-            `- Lỗi: ${mlError.message || 'Unknown error'}\n\n` +
-            'Để nhận dạng văn bản thực tế:\n' +
-            '1. Đảm bảo đã cài đặt react-native-ml-kit đúng cách\n' +
-            '2. Sử dụng Expo Development Build thay vì Expo Go\n' +
-            '3. Kiểm tra tài liệu tại https://github.com/a7medev/react-native-ml-kit\n\n' +
-            'Hiện tại API có thể chưa được cấu hình đầy đủ.'
-          );
-        }
-      } else {
-        // Firebase chưa được cấu hình
-        setRecognizedText(
-          'Firebase chưa được cấu hình đầy đủ.\n\n' +
-          'Để sử dụng Firebase ML thực tế:\n' +
-          '1. Cấu hình Firebase project trong Firebase Console\n' +
-          '2. Cập nhật config/firebase.ts với thông tin thực tế\n' +
-          '3. Bật ML API trong Firebase Console\n' +
-          '4. Sử dụng @react-native-firebase/ml (cần Expo Development Build)\n\n' +
-          'Hiện tại đang sử dụng mock data để demo UI.'
-        );
-      }
-      
-      setIsProcessing(false);
-      
-    } catch (error) {
-      console.error('Error recognizing text:', error);
-      Alert.alert('Lỗi', 'Không thể nhận dạng văn bản từ ảnh');
-      setIsProcessing(false);
-    }
-  }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content}>
         <Text style={styles.title}>Machine Learning</Text>
-        <Text style={styles.subtitle}>Nhận dạng văn bản từ ảnh với Firebase</Text>
-        
-        {/* Firebase Status */}
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>{firebaseStatus}</Text>
-        </View>
-        
-        {/* Hiển thị ảnh đã chọn */}
-        {selectedImage && (
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-            <TouchableOpacity 
-              style={styles.removeImageButton}
-              onPress={() => {
-                setSelectedImage(null);
-                setImagePath('');
-                setRecognizedText('');
-              }}
-            >
-              <Text style={styles.removeImageText}>✕</Text>
-            </TouchableOpacity>
-          </View>
+        <Text style={styles.subtitle}>Dịch văn bản</Text>
+        {translatedText && (
+          <Text style={styles.resultTitle}>Kết quả dịch: {translatedText}</Text>
         )}
-
-        {/* Nhập đường dẫn ảnh thủ công */}
-
-        {/* Input đường dẫn ảnh */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Nhập đường dẫn ảnh:</Text>
-          <TextInput
-            style={styles.input}
-            value={imagePath}
-            onChangeText={handleImagePathChange}
-            placeholder="Nhập đường dẫn ảnh hoặc URL..."
-            placeholderTextColor="#999"
-          />
-        </View>
-
-        <TouchableOpacity 
-          style={[styles.button, (isProcessing || !imagePath) && styles.buttonDisabled]}
-          onPress={() => recognizeTextFromImage(imagePath)}
-          disabled={isProcessing || !imagePath}
-        >
-          <Text style={styles.buttonText}>
-            {isProcessing ? 'Đang xử lý...' : 'Nhận dạng văn bản với Firebase'}
-          </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nhập văn bản cần dịch"
+          value={textToTranslate}
+          onChangeText={setTextToTranslate}
+        />
+        <TouchableOpacity style={styles.button} onPress={translateExample} disabled={isLoading}>
+          <Text style={styles.buttonText}>{isLoading ? 'Đang dịch...' : 'Dịch'}</Text>
         </TouchableOpacity>
-
-        {recognizedText ? (
-          <View style={styles.resultContainer}>
-            <Text style={styles.resultTitle}>Kết quả nhận dạng:</Text>
-            <Text style={styles.resultText}>{recognizedText}</Text>
-          </View>
-        ) : null}
-        
         <TouchableOpacity 
           style={styles.backButton}
           onPress={() => router.back()}
@@ -276,6 +160,7 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     backgroundColor: 'white',
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#007AFF',
