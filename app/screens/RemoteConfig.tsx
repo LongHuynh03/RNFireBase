@@ -1,15 +1,59 @@
+import remoteConfig from "@react-native-firebase/remote-config";
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function RemoteConfigScreen() {
   const router = useRouter();
+  const [theme, setTheme] = useState("default");
+
+  useEffect(() => {
+    const initRemoteConfig = async () => {
+      try {
+        await remoteConfig().setDefaults({
+          theme: 'default',
+        });
+
+        await remoteConfig().setConfigSettings({
+          minimumFetchIntervalMillis: 0,
+        });
+  
+        const fetchedRemotely = await remoteConfig().fetchAndActivate();
+  
+        if (fetchedRemotely) {
+          console.log('Configs were retrieved from the backend and activated.');
+        } else {
+          console.log(
+            'No configs were fetched from the backend, using cache/defaults.',
+          );
+        }
+  
+        const allValues = remoteConfig().getAll();
+        Object.keys(allValues).forEach(key => {
+          console.log(`Param: ${key} = ${allValues[key].asString()}`);
+        });
+        updateValues();
+      } catch (err) {
+        console.error('Remote Config error:', err);
+      }
+    };
+  
+    initRemoteConfig();
+  }, []);
+
+  const updateValues = () => {
+    const theme = remoteConfig().getValue("theme").asString();
+    setTheme(theme);
+  };
+
+  const backgroundColor = theme === "dark" ? "#000" : "#fff";
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <View style={styles.content}>
         <Text style={styles.title}>Remote Config</Text>
+        <Text>Giá trị: {theme}</Text>
         <Text style={styles.subtitle}>Trang về Remote Config</Text>
-        
         <TouchableOpacity 
           style={styles.backButton}
           onPress={() => router.back()}

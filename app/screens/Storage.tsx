@@ -1,14 +1,26 @@
+import { utils } from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 
 export default function StorageScreen() {
   const router = useRouter();
+  const reference = storage().ref('black-t-shirt-sm.png');
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Storage</Text>
-        <Text style={styles.subtitle}>Trang về Storage</Text>
+        <Button
+          title="Upload"
+          onPress={async () => {
+            // path to existing file on filesystem
+            const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
+            // uploads file
+            await reference.putFile(pathToFile);
+          }}
+        />
         
         <TouchableOpacity 
           style={styles.backButton}

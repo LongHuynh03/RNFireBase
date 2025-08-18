@@ -1,4 +1,3 @@
-import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -39,71 +38,7 @@ export default function MLScreen() {
     }
   }, []);
 
-  // Yêu cầu quyền truy cập camera
-  const requestCameraPermission = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Quyền truy cập', 'Cần quyền truy cập camera để chụp ảnh');
-      return false;
-    }
-    return true;
-  };
-
-  // Yêu cầu quyền truy cập thư viện ảnh
-  const requestMediaLibraryPermission = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Quyền truy cập', 'Cần quyền truy cập thư viện ảnh');
-      return false;
-    }
-    return true;
-  };
-
-  // Chụp ảnh từ camera
-  const takePhoto = async () => {
-    const hasPermission = await requestCameraPermission();
-    if (!hasPermission) return;
-
-    try {
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setSelectedImage(imageUri);
-        setImagePath(imageUri);
-        setRecognizedText(''); // Reset kết quả cũ
-      }
-    } catch (error) {
-      console.error('Error taking photo:', error);
-      Alert.alert('Lỗi', 'Không thể chụp ảnh');
-    }
-  };
-
-  // Chọn ảnh từ thư viện
-  const pickImage = async () => {
-    const hasPermission = await requestMediaLibraryPermission();
-    if (!hasPermission) return;
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setSelectedImage(imageUri);
-        setImagePath(imageUri);
-        setRecognizedText(''); // Reset kết quả cũ
-      }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('Lỗi', 'Không thể chọn ảnh');
-    }
-  };
+  // Đã loại bỏ chức năng chụp/chọn ảnh phụ thuộc expo-image-picker
 
   // Xử lý khi nhập đường dẫn ảnh
   const handleImagePathChange = (path: string) => {
@@ -201,20 +136,11 @@ export default function MLScreen() {
           </View>
         )}
 
-        {/* Buttons để chọn ảnh */}
-        <View style={styles.imageButtonsContainer}>
-          <TouchableOpacity style={styles.imageButton} onPress={takePhoto}>
-            <Text style={styles.imageButtonText}>📷 Chụp ảnh</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
-            <Text style={styles.imageButtonText}>🖼️ Chọn ảnh</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Nhập đường dẫn ảnh thủ công */}
 
         {/* Input đường dẫn ảnh */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Hoặc nhập đường dẫn ảnh:</Text>
+          <Text style={styles.label}>Nhập đường dẫn ảnh:</Text>
           <TextInput
             style={styles.input}
             value={imagePath}
