@@ -38,7 +38,7 @@ export default function MLScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content}>
         <Text style={styles.title}>Machine Learning</Text>
-        <Text style={styles.subtitle}>Dịch văn bản</Text>
+        <Text style={styles.subtitle}>Dịch văn bản EN to VI</Text>
         {translatedText && (
           <Text style={styles.resultTitle}>Kết quả dịch: {translatedText}</Text>
         )}
