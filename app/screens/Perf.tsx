@@ -1,14 +1,44 @@
+import perf from '@react-native-firebase/perf';
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function PerfScreen() {
   const router = useRouter();
 
+  async function getRequest(url: string) {
+    // Define the network metric
+    const metric = await perf().newHttpMetric(url, 'GET');
+  
+    // Define meta details
+    metric.putAttribute('user', 'abcd');
+  
+    // Start the metric
+    await metric.start();
+  
+    // Perform a HTTP request and provide response information
+    const response = await fetch(url);
+    metric.setHttpResponseCode(response.status);
+    metric.setResponseContentType(response.headers.get('Content-Type'));
+    metric.setResponsePayloadSize(Number(response.headers.get('Content-Length')));
+  
+    // Stop the metric
+    await metric.stop();
+  
+    return response.json();
+  }
+
+  useEffect(() => {
+    getRequest('https://jsonplaceholder.typicode.com/todos/5').then(json => {
+      console.log(json);
+    });
+  }, []);
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Performance Monitoring</Text>
-        <Text style={styles.subtitle}>Trang về Performance Monitoring</Text>
+        <Text style={styles.subtitle}>Kiểm tra lại ở Performance Monitoring trong Firebase Console</Text>
         
         <TouchableOpacity 
           style={styles.backButton}
