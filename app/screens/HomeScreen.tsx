@@ -1,43 +1,77 @@
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#f5f5f5', dark: '#1a1a1a' }}
+      headerImage={
+        <Image
+          source={require('../../assets/images/react-logo.png')}
+          style={{ width: '100%', height: '100%' }}
+          contentFit="cover"
+        />
+      }
+    >
       <View style={styles.content}>
         <Text style={styles.title}>Chào mừng!</Text>
         <Text style={styles.subtitle}>Chọn chức năng bạn muốn sử dụng:</Text>
-        
         <View style={styles.buttonContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/functions')}
+          >
+            <Text style={styles.buttonText}>Functions (Pricing)</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/in-app-messaging')}
+          >
+            <Text style={styles.buttonText}>In-App Messaging</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/installations')}
+          >
+            <Text style={styles.buttonText}>Installations</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/messaging')}
+          >
+            <Text style={styles.buttonText}>Messaging</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/ml')}
           >
             <Text style={styles.buttonText}>Machine Learning</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/perf')}
           >
-            <Text style={styles.buttonText}>Performance Monitoring</Text>
+            <Text style={[styles.buttonText, { fontSize: 13 }]}>Performance Monitoring</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/remote-config')}
           >
             <Text style={styles.buttonText}>Remote Config</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/storage')}
           >
-            <Text style={styles.buttonText}>Storage</Text>
+            <Text style={styles.buttonText}>Storage (Pricing)</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </ParallaxScrollView>
   );
 }
 
