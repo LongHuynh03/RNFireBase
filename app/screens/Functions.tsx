@@ -1,14 +1,50 @@
 import { useRouter } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Button, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+const resolveEmulatorHost = () => {
+  if (Platform.OS === 'android') return '10.0.2.2';
+  return '127.0.0.1';
+};
+
+const projectId = 'rn-test-3a6ca';
+const region = 'us-central1';
 
 export default function FunctionsScreen() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handlePayment = async () => {
+    setLoading(true);
+    try {
+      const host = resolveEmulatorHost();
+      const url = `http://${host}:5001/${projectId}/${region}/processPayment`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: 'sp01', amount: 50000 }),
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      Alert.alert('Kết quả', (data as any).message ?? 'Thanh toán thành công');
+    } catch (err: any) {
+      Alert.alert("Lỗi", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Functions</Text>
-        <Text style={styles.subtitle}>Trang về Functions</Text>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Mua sản phẩm A - 50.000đ</Text>
+          <Button title={loading ? "Đang xử lý..." : "Thanh toán"} onPress={handlePayment} />
+        </View>
         
         <TouchableOpacity 
           style={styles.backButton}

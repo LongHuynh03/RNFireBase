@@ -25,14 +25,14 @@ export default function HomeScreen() {
             style={styles.button}
             onPress={() => router.push('/functions')}
           >
-            <Text style={styles.buttonText}>Functions (Pricing)</Text>
+            <Text style={styles.buttonText}>Functions</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/in-app-messaging')}
           >
             <Text style={styles.buttonText}>In-App Messaging</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/installations')}
@@ -41,9 +41,9 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/messaging')}
+            onPress={() => router.push('/realtime')}
           >
-            <Text style={styles.buttonText}>Messaging</Text>
+            <Text style={styles.buttonText}>Realtime</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
@@ -63,12 +63,12 @@ export default function HomeScreen() {
           >
             <Text style={styles.buttonText}>Remote Config</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.button}
             onPress={() => router.push('/storage')}
           >
             <Text style={styles.buttonText}>Storage (Pricing)</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </ParallaxScrollView>

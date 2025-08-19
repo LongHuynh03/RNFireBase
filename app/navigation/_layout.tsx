@@ -12,7 +12,7 @@ export default function RootLayout() {
         <Stack.Screen name="functions" options={{ title: 'Functions' }} />
         <Stack.Screen name="in-app-messaging" options={{ title: 'In-App Messaging' }} />
         <Stack.Screen name="installations" options={{ title: 'Installations' }} />
-        <Stack.Screen name="messaging" options={{ title: 'Messaging' }} />
+        <Stack.Screen name="realtime" options={{ title: 'Realtime' }} />
         <Stack.Screen name="ml" options={{ title: 'Machine Learning' }} />
         <Stack.Screen name="perf" options={{ title: 'Performance Monitoring' }} />
         <Stack.Screen name="remote-config" options={{ title: 'Remote Config' }} />

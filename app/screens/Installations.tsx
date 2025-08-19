@@ -1,15 +1,27 @@
+import { firebase, getInstallations } from '@react-native-firebase/installations';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+export const installations = getInstallations(firebase.app());
 
 export default function InstallationsScreen() {
   const router = useRouter();
+  const saveFid = async () => {
+    try {
+      const fid = await installations.getId();
+      Alert.alert("FID của thiết bị:", fid);
+      console.log("FID của thiết bị:", fid);
+    } catch (err) {
+      console.log("Lỗi lấy FID:", err);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Installations</Text>
         <Text style={styles.subtitle}>Trang về Installations</Text>
-        
+        <Button title="Lưu FID" onPress={saveFid} />
         <TouchableOpacity 
           style={styles.backButton}
           onPress={() => router.back()}
@@ -45,6 +57,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   backButton: {
+    marginTop: 20,
     backgroundColor: '#FF3B30',
     paddingVertical: 12,
     paddingHorizontal: 24,
